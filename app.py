@@ -6,7 +6,7 @@ create_altcoin_table_if_not_exists, fetch_altcoin_data_from_binance
 
 def main():
     
-    send_email("Bot is up and running!", "SUCCESS", "xrge152@gmail.com, sinatalay@hotmail.com")
+    #send_email("Bot is up and running!", "SUCCESS", "xrge152@gmail.com, sinatalay@hotmail.com")
     
     print("Application Started!")
     
@@ -15,8 +15,9 @@ def main():
     run_method_with_perfect_intervals(fetch_btc_data_from_binance, 1)
 
 if __name__ == "__main__":
-    
+
     try:
         main()
     except Exception as e:
-        send_email("The application stopped: " + str(e), "FAIL", "xrge152@gmail.com, sinatalay@hotmail.com")
+        pass
+        #send_email("The application stopped: " + str(e), "FAIL", "xrge152@gmail.com, sinatalay@hotmail.com")
