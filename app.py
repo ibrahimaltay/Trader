@@ -1,0 +1,13 @@
+
+
+from views import run_method_with_perfect_intervals
+
+from models import fetch_btc_data_from_binance, create_btc_table_if_not_exists, \
+create_altcoin_table_if_not_exists, fetch_altcoin_data_from_binance
+
+create_btc_table_if_not_exists()
+create_altcoin_table_if_not_exists()
+
+run_method_with_perfect_intervals(fetch_btc_data_from_binance, 1)
+
+
