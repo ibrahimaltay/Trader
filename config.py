@@ -19,10 +19,10 @@ def send_email(text, subject, receiver):
     msg = EmailMessage()
     msg.set_content(text)
     msg['Subject'] = subject
-    msg['From'] = "TradingBot"
+    msg['From'] = "Trade@oyuncasusu.com"
     msg['To'] = receiver
 
-    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server = smtplib.SMTP_SSL('mail.oyuncasusu.com', 465)
 
     email = parsed_json_file.get('EMAIL')
     email_password = parsed_json_file.get('EMAIL_PASSWORD')
