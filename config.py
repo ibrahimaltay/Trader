@@ -14,19 +14,20 @@ client = Client(api_key, api_secret)
 conn = sqlite3.connect('coins.db')
 c = conn.cursor()
 
-def send_email(text, subject, receiver):
+# def send_email(text, subject, receiver):
 
-    msg = EmailMessage()
-    msg.set_content(text)
-    msg['Subject'] = subject
-    msg['From'] = "Trade@oyuncasusu.com"
-    msg['To'] = receiver
+#     msg = EmailMessage()
+#     msg.set_content(text)
+#     msg['Subject'] = subject
+#     msg['From'] = "traderbot"
+#     msg['To'] = receiver
 
-    server = smtplib.SMTP_SSL('mail.oyuncasusu.com', 465)
+#     server = smtplib.SMTP('smtp.google.com', 587)
+#     server.starttls()
+    
+#     email = parsed_json_file.get('EMAIL')
+#     email_password = parsed_json_file.get('EMAIL_PASSWORD')
 
-    email = parsed_json_file.get('EMAIL')
-    email_password = parsed_json_file.get('EMAIL_PASSWORD')
-
-    server.login(email, email_password)
-    server.send_message(msg)
-    server.quit()
+#     server.login(email, email_password)
+#     server.send_message(msg)
+#     server.quit()
