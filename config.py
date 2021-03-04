@@ -14,20 +14,50 @@ client = Client(api_key, api_secret)
 conn = sqlite3.connect('coins.db')
 c = conn.cursor()
 
-# def send_email(text, subject, receiver):
+def send_email(Message, Destination):
 
-#     msg = EmailMessage()
-#     msg.set_content(text)
-#     msg['Subject'] = subject
-#     msg['From'] = "traderbot"
-#     msg['To'] = receiver
+    json_file = open('secrets.json', 'r')
+    parsed_json_file = json.load(json_file)
 
-#     server = smtplib.SMTP('smtp.google.com', 587)
-#     server.starttls()
-    
-#     email = parsed_json_file.get('EMAIL')
-#     email_password = parsed_json_file.get('EMAIL_PASSWORD')
+    SMTPserver = 'mail.oyuncasusu.com'
+    sender =     'trade@oyuncasusu.com'
+    destination = Destination
 
-#     server.login(email, email_password)
-#     server.send_message(msg)
-#     server.quit()
+    USERNAME = parsed_json_file.get('EMAIL')
+    PASSWORD = parsed_json_file.get('EMAIL_PASSWORD')
+
+    # typical values for text_subtype are plain, html, xml
+    text_subtype = 'plain'
+
+    content="""\
+    Test message
+    """
+
+    subject="Notification"
+
+    import sys
+    import os
+    import re
+
+    from smtplib import SMTP_SSL as SMTP       # this invokes the secure SMTP protocol (port 465, uses SSL)
+    # from smtplib import SMTP                  # use this for standard SMTP protocol   (port 25, no encryption)
+
+    # old version
+    # from email.MIMEText import MIMEText
+    from email.mime.text import MIMEText
+
+    try:
+        msg = MIMEText(Message, text_subtype)
+        msg['Subject']=       subject
+        msg['From']   = sender # some SMTP servers will do this automatically, not all
+
+        conn = SMTP(SMTPserver)
+        conn.set_debuglevel(False)
+        conn.login(USERNAME, PASSWORD)
+        try:
+            conn.sendmail(sender, destination, msg.as_string())
+        finally:
+            conn.quit()
+
+    except:
+        sys.exit( "mail failed; %s" % "CUSTOM_ERROR" ) # give an error message
