@@ -1,0 +1,7 @@
+secrets.json
+coins.db
+coins.csv
+__pycache__/
+Rpi_Data/
+copy_coins_from_rpi.sh
+*.csv
