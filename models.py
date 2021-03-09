@@ -1,5 +1,12 @@
-import pandas as pd
-from config import client, conn, c
+import sqlite3
+from config import client
+
+def create_sqlite_db(db_name):
+    """ Returns connection (0) and cursor (1) """
+    conn = sqlite3.connect(str(db_name) + '.db')
+    c = conn.cursor()
+    return conn, c
+
 
 def create_btc_table_if_not_exists():
     c.execute("""
@@ -29,34 +36,7 @@ def create_btc_table_if_not_exists():
     );
 
     """)
-def create_altcoin_table_if_not_exists():
-        c.execute("""
 
-    CREATE TABLE IF NOT EXISTS X_Data (
-        SYMBOL TEXT NOT NULL,
-        priceChange REAL NOT NULL,
-        priceChangePercent REAL NOT NULL,
-        weightedAvgPrice REAL NOT NULL,
-        prevClosePrice REAL NOT NULL,
-        lastPrice REAL NOT NULL,
-        lastQty REAL NOT NULL,
-        bidPrice REAL NOT NULL,
-        bidQty REAL NOT NULL,
-        askPrice REAL NOT NULL,
-        askQty REAL NOT NULL,
-        openPrice REAL NOT NULL,
-        highPrice REAL NOT NULL,
-        lowPrice REAL NOT NULL,
-        volume REAL NOT NULL,
-        quoteVolume REAL NOT NULL,
-        openTime REAL NOT NULL,
-        closeTime REAL NOT NULL,
-        firstId REAL NOT NULL,
-        lastId REAL NOT NULL,
-        count REAL NOT NULL
-    );
-
-    """)
 
 insert_btc_command = """ INSERT INTO BTC_Data VALUES 
 (
@@ -135,27 +115,90 @@ ticker = {'symbol': 'BTCUSDT',
  'lastId': 675468951,
  'count': 1788692}
 
-def get_btc_as_dataframe():
-    return pd.DataFrame(c.execute("""
-    SELECT * FROM BTC_Data
-    """).fetchall(), columns=ticker.keys())
 
-def export_btc_as_dataframe():
-    pd.DataFrame(c.execute("""
-    SELECT * FROM BTC_Data
-    """).fetchall(), columns=ticker.keys()).to_csv('BTC_Data.csv')
+values_command = """ VALUES 
+(
+:symbol, 
+:priceChange,
+:priceChangePercent,
+:weightedAvgPrice, 
+:prevClosePrice, 
+:lastPrice,
+:lastQty,
+:bidPrice,
+:bidQty,
+:askPrice,
+:askQty,
+:openPrice,
+:highPrice,
+:lowPrice,
+:volume,
+:quoteVolume,
+:openTime,
+:closeTime,
+:firstId,
+:lastId,
+:count
+) 
+"""
 
-def delete_data_from_BTC():
-    c.execute("DELETE FROM BTC_Data")
+def create_table_if_not_exists(table_name, conn, c):
+        c.execute("""
+
+    CREATE TABLE IF NOT EXISTS {0} (
+        SYMBOL TEXT NOT NULL,
+        priceChange REAL NOT NULL,
+        priceChangePercent REAL NOT NULL,
+        weightedAvgPrice REAL NOT NULL,
+        prevClosePrice REAL NOT NULL,
+        lastPrice REAL NOT NULL,
+        lastQty REAL NOT NULL,
+        bidPrice REAL NOT NULL,
+        bidQty REAL NOT NULL,
+        askPrice REAL NOT NULL,
+        askQty REAL NOT NULL,
+        openPrice REAL NOT NULL,
+        highPrice REAL NOT NULL,
+        lowPrice REAL NOT NULL,
+        volume REAL NOT NULL,
+        quoteVolume REAL NOT NULL,
+        openTime REAL NOT NULL,
+        closeTime REAL NOT NULL,
+        firstId REAL NOT NULL,
+        lastId REAL NOT NULL,
+        count REAL NOT NULL
+    );
+
+    """.format(table_name))
+        conn.commit()
+
+
+
+# def get_btc_as_dataframe():
+#     return pd.DataFrame(c.execute("""
+#     SELECT * FROM BTC_Data
+#     """).fetchall(), columns=ticker.keys())
+
+# def export_btc_as_dataframe():
+#     pd.DataFrame(c.execute("""
+#     SELECT * FROM BTC_Data
+#     """).fetchall(), columns=ticker.keys()).to_csv('BTC_Data.csv')
+
+# def delete_data_from_BTC():
+#     c.execute("DELETE FROM BTC_Data")
+#     conn.commit()
+
+# def fetch_btc_data_from_binance():
+#     c.execute(insert_btc_command, client.get_ticker(symbol='BTCUSDT'))
+#     conn.commit()
+
+# def fetch_altcoin_data_from_binance():
+#     c.execute(insert_x_command, client.get_ticker(symbol='XLMUSDT'))
+#     conn.commit()
+
+def fetch_crypto_data_from_binance(ticker_symbol, table_name, conn, c):
+    c.execute("INSERT INTO " + str(ticker_symbol) + values_command, client.get_ticker(symbol = ticker_symbol))        
     conn.commit()
 
-def fetch_btc_data_from_binance():
-        c.execute(insert_btc_command, client.get_ticker(symbol='BTCUSDT'))
-        conn.commit()
-
-def fetch_altcoin_data_from_binance():
-        c.execute(insert_x_command, client.get_ticker(symbol='XLMUSDT'))
-        conn.commit()
-
-if __name__ == '__main__':
-    export_btc_as_dataframe()
+# if __name__ == '__main__':
+#     export_btc_as_dataframe()

@@ -1,39 +1,33 @@
-from views import run_method_with_perfect_intervals
-
-from models import fetch_btc_data_from_binance, create_btc_table_if_not_exists, \
-create_altcoin_table_if_not_exists, fetch_altcoin_data_from_binance
-
-from config import send_email
-
+from models import create_table_if_not_exists, create_sqlite_db, fetch_crypto_data_from_binance
 import time
+import argparse
+from datetime import datetime
+from config import send_email
 
 program_ticks = 0
 
-MAIL_LIST = ['xrge152@gmail.com', 'sinatalay@hotmail.com']
+MAIL_LIST = ['xrge152@gmail.com']
+
+PARAMETER = 'BNBUSDT'
+
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("symbol")
+args = arg_parser.parse_args()
+
+if args.symbol:
+    print(args.symbol)
+    PARAMETER = str(args.symbol).upper()
+
+conn, c = create_sqlite_db(PARAMETER)
 
 def main():
-    
-    # send_email("Bot is up and running!", "SUCCESS", "xrge152@gmail.com, sinatalay@hotmail.com")
-    
-    print("Application Started!")
-    
-    send_email("Raspberry Pi is up and running!", MAIL_LIST)
+    create_table_if_not_exists(PARAMETER, conn, c)
+    fetch_crypto_data_from_binance(PARAMETER, PARAMETER, conn, c)
+    datetime_now = datetime.now().astimezone().strftime("%d/%m/%Y %H:%M:%S")
+    send_email(f"Successful execution at {datetime_now}", MAIL_LIST)
 
-    create_btc_table_if_not_exists()
-    create_altcoin_table_if_not_exists()
-    run_method_with_perfect_intervals(fetch_btc_data_from_binance, 1)
-
-    program_ticks = 0
-
-if __name__ == "__main__":
-    
-    while True:
-        try:
-            main()
-        except Exception as e:
-            send_email(e, MAIL_LIST)
-            program_ticks += 1
-            time.sleep(120)
-
-        if program_ticks >= 10:
-            break
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print(f"An error occured! \nStacktrace: {e}")

@@ -4,6 +4,8 @@ import json
 import smtplib
 from email.message import EmailMessage
 
+
+
 json_file = open('secrets.json', 'r')
 parsed_json_file = json.load(json_file)
 
@@ -11,13 +13,9 @@ api_key = parsed_json_file.get('API_KEY')
 api_secret = parsed_json_file.get('API_SECRET')
 
 client = Client(api_key, api_secret)
-conn = sqlite3.connect('coins.db')
-c = conn.cursor()
+
 
 def send_email(Message, Destination):
-
-    json_file = open('secrets.json', 'r')
-    parsed_json_file = json.load(json_file)
 
     SMTPserver = 'mail.oyuncasusu.com'
     sender =     'trade@oyuncasusu.com'
@@ -48,16 +46,16 @@ def send_email(Message, Destination):
 
     try:
         msg = MIMEText(Message, text_subtype)
-        msg['Subject']=       subject
+        msg['Subject']= subject
         msg['From']   = sender # some SMTP servers will do this automatically, not all
 
-        conn = SMTP(SMTPserver)
-        conn.set_debuglevel(False)
-        conn.login(USERNAME, PASSWORD)
+        mail_conn = SMTP(SMTPserver)
+        mail_conn.set_debuglevel(False)
+        mail_conn.login(USERNAME, PASSWORD)
         try:
-            conn.sendmail(sender, destination, msg.as_string())
+            mail_conn.sendmail(sender, destination, msg.as_string())
         finally:
-            conn.quit()
+            mail_conn.quit()
 
-    except:
-        sys.exit( "mail failed; %s" % "CUSTOM_ERROR" ) # give an error message
+    except Exception as e:
+        print(f"Email Exception: {str(e)}")
