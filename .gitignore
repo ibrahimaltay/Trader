@@ -6,3 +6,4 @@ Rpi_Data/
 copy_coins_from_rpi.sh
 *.csv
 *.db
+*.txt
